@@ -36,7 +36,7 @@ const RegisterScreen = () => {
         const res = await register({ name, email, password }).unwrap();
         dispatch(setCredentials({ ...res }));
         navigate("/");
-      } catch (error) {
+      } catch (err) {
         toast.error(err?.data?.message || err.error);
       }
     }
@@ -45,7 +45,7 @@ const RegisterScreen = () => {
   return (
     <FormContainer>
       <h1>Sign Up</h1>
-      <Form onSubmit={{ submitHandler }}>
+      <Form onSubmit={ submitHandler }>
         <Form.Group className="my-2" controlId="name">
           <Form.Label>Name</Form.Label>
           <Form.Control
@@ -66,7 +66,7 @@ const RegisterScreen = () => {
           ></Form.Control>
         </Form.Group>
 
-        <Form.Group className="my-2" controlId="email">
+        <Form.Group className="my-2" controlId="password">
           <Form.Label>Password </Form.Label>
           <Form.Control
             type="password"
@@ -88,7 +88,7 @@ const RegisterScreen = () => {
 
         {isLoading && <Loader />}
 
-        <Button type="submit" varient="primary" className="mt-3">
+        <Button type="submit" variant="primary" className="mt-3">
           Sign Up
         </Button>
 
