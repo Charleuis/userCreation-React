@@ -26,9 +26,7 @@ const ProfileScreen = () => {
 
   const submitHandler = async (e) => {
     e.preventDefault();
-    if (password !== confirmPassword) {
-      toast.error("Password do not march");
-    } else {
+   
       try {
         const res = await updateProfile({
           _id: userInfo._id,
@@ -40,7 +38,6 @@ const ProfileScreen = () => {
       } catch (err) {
         toast.error(err?.data?.message || err?.error);
       }
-    }
   };
 
   return (
