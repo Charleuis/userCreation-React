@@ -5,8 +5,8 @@ dotenv.config();
 import cookieParser from "cookie-parser";
 import { notFound, errorHandler } from "./middleware/errorMiddleware.js";
 import mongoDBConnect from "./config/db.js";
-
 import userRoutes from "./routes/userRoutes.js";
+
 const PORT = process.env.PORT || 5000;
 mongoDBConnect();
 
@@ -18,6 +18,7 @@ app.use(express.urlencoded({ extended: true }));
 app.use(cookieParser());
 
 app.use("/api/users", userRoutes);
+
 
 if (process.env.NODE_ENV === "production") {
   const __dirname = path.resolve();

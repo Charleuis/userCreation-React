@@ -1,8 +1,7 @@
 import asyncHandler from "express-async-handler";
 import generateToken from "../utils/generateToken.js";
 import User from "../models/userModel.js";
-import bcrypt from 'bcryptjs'
-
+import bcrypt from "bcryptjs";
 
 const authUser = asyncHandler(async (req, res) => {
   const { email, password } = req.body;
@@ -10,13 +9,14 @@ const authUser = asyncHandler(async (req, res) => {
   const user = await User.findOne({ email });
 
   // (await user.matchPassword(password))
-      
-      if (user && await bcrypt.compare(password,user.password)) {
-  generateToken(res, user._id);
+
+  if (user && (await bcrypt.compare(password, user.password))) {
+    generateToken(res, user._id);
     res.status(201).json({
-        _id: user._id,
-        name: user.name,
-        email: user.email,
+      _id: user._id,
+      name: user.name,
+      email: user.email,
+      image: user.image,
     });
   } else {
     res.status(401);
@@ -33,19 +33,19 @@ const registerUser = asyncHandler(async (req, res) => {
     throw new Error("User already Exists");
   }
 
-  // const hashedPassword = await bcrypt.hash(password, 10);
+  const hashedPassword = await bcrypt.hash(password, 10);
   const user = await User.create({
     name,
     email,
-    password ,
+    password: hashedPassword,
   });
 
   if (user) {
     generateToken(res, user._id);
     res.status(201).json({
-        _id: user._id,
-        name: user.name,
-        email: user.email,
+      _id: user._id,
+      name: user.name,
+      email: user.email,
     });
   } else {
     res.status(400);
@@ -59,7 +59,7 @@ const logoutUser = asyncHandler(async (req, res) => {
     expires: new Date(0),
   });
 
-  res.status(200 ).json({ message: "User Logged Out" });
+  res.status(200).json({ message: "User Logged Out" });
 });
 
 const getUserProfile = asyncHandler(async (req, res) => {
@@ -67,6 +67,7 @@ const getUserProfile = asyncHandler(async (req, res) => {
     _id: req.user._id,
     name: req.user.name,
     email: req.user.email,
+    image: req.user.image,
   };
 
   res.status(200).json(user);
@@ -75,25 +76,25 @@ const getUserProfile = asyncHandler(async (req, res) => {
 const updateUserProfile = asyncHandler(async (req, res) => {
   const user = await User.findById(req.user._id);
 
-  if(user){
+  if (user) {
     user.name = req.body.name || user.name;
     user.email = req.body.email || user.email;
 
-    if(req.body.password){
-      const hashedPassword = await bcrypt.hash(req.body.password, 10);
-      // user.password = req.body.password
+    if (req.file) {
+      user.image = req.file.filename;
     }
 
     const updatedUser = await user.save();
-    res.status(200).json({
-      _id:updatedUser._id,
-      name:updatedUser.name,
-      email:updatedUser.email,
-    });
 
-  }else{
-    res.status(404)
-    throw new Error('User not Found')
+    res.status(200).json({
+      _id: updatedUser._id,
+      name: updatedUser.name,
+      email: updatedUser.email,
+      image: updatedUser.image,
+    });
+  } else {
+    res.status(404);
+    throw new Error("User not Found");
   }
 });
 

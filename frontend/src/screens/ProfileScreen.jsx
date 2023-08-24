@@ -1,5 +1,4 @@
 import { useState, useEffect } from "react";
-import { Link, useNavigate } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
 import { Form, Button } from "react-bootstrap";
 import FormContainer from "../components/FormContainer";
@@ -11,39 +10,106 @@ import { setCredentials } from "../slices/authSlice";
 const ProfileScreen = () => {
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
+  const [image, setImage] = useState("");
+  const [selectedImage, setSelectedImage] = useState("");
 
-  const navigate = useNavigate();
   const dispatch = useDispatch();
 
   const { userInfo } = useSelector((state) => state.auth);
+  console.log(userInfo);
 
   const [updateProfile, { isLoading }] = useUpdateUserMutation();
+
+  const handleImageUpload = (e) => {
+    const file = e.target.files[0];
+    setImage(e.target.files[0]);
+    if (file) {
+      file.name;
+      const reader = new FileReader();
+      reader.onload = (e) => {
+        setSelectedImage(e.target.result); // Set the selected image's data URL
+      };
+      reader.readAsDataURL(file);
+    }
+  };
 
   useEffect(() => {
     setName(userInfo.name);
     setEmail(userInfo.email);
-  }, [userInfo.setName, userInfo.setEmail]);
+    setImage(userInfo.image);
+  }, [userInfo]);
 
   const submitHandler = async (e) => {
     e.preventDefault();
-   
-      try {
-        const res = await updateProfile({
-          _id: userInfo._id,
-          name,
-          email,
-        }).unwrap();
-        dispatch(setCredentials({ ...res }));
-        toast.success("Profile Updated");
-      } catch (err) {
-        toast.error(err?.data?.message || err?.error);
-      }
+    try {
+      const formData = new FormData();
+      formData.append("_id", userInfo._id);
+      formData.append("name", name);
+      formData.append("email", email);
+      formData.append("image", image);
+
+      const res = await updateProfile(formData).unwrap();
+      dispatch(setCredentials({ ...res }));
+    } catch (err) {
+      toast.error(err?.data?.message || err?.error);
+    }
   };
 
   return (
     <FormContainer>
       <h1>Update Profile</h1>
       <Form onSubmit={submitHandler}>
+        <Form.Group className="my-2" controlId="image">
+          <div
+            style={{
+              display: "flex",
+              justifyContent: "center",
+              alignItems: "center",
+            }}
+          >
+            {selectedImage ? (
+              <img
+                src={selectedImage}
+                alt="Profile"
+                style={{ width: "200px", height: "200px", borderRadius: "50%" }}
+              />
+            ) : (
+              <>
+                {image ? (
+                  <img
+                    src={`/assets/${image}`}
+                    alt="Profile"
+                    style={{
+                      width: "200px",
+                      height: "200px",
+                      borderRadius: "50%",
+                    }}
+                  />
+                ) : (
+                  <img
+                    src="/assets/dummy.jpg"
+                    alt="Profile"
+                    style={{
+                      width: "200px",
+                      height: "200px",
+                      borderRadius: "50%",
+                    }}
+                  />
+                )}
+              </>
+            )}
+          </div>
+          <div
+            style={{
+              display: "flex",
+              justifyContent: "center",
+              alignItems: "center",
+            }}
+          >
+            <input type="file" onChange={handleImageUpload} />
+          </div>
+        </Form.Group>
+
         <Form.Group className="my-2" controlId="name">
           <Form.Label>Name</Form.Label>
           <Form.Control

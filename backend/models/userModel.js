@@ -3,6 +3,9 @@ import mongoose from "mongoose";
 
 const userSchema = mongoose.Schema(
   {
+    image: {
+      type: String,
+    },
     name: {
       type: String,
       required: true,
@@ -16,8 +19,13 @@ const userSchema = mongoose.Schema(
       type: String,
       required: true,
     },
+    isAdmin:{
+      type:Boolean,
+      required:true,
+      default:false
+    }
   },
-  { timestamp: true }
+  { timestamps: true }
 );
 
 // userSchema.pre("save", async function (next) {
