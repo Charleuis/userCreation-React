@@ -16,7 +16,6 @@ const ProfileScreen = () => {
   const dispatch = useDispatch();
 
   const { userInfo } = useSelector((state) => state.auth);
-  console.log(userInfo);
 
   const [updateProfile, { isLoading }] = useUpdateUserMutation();
 
@@ -27,7 +26,7 @@ const ProfileScreen = () => {
       file.name;
       const reader = new FileReader();
       reader.onload = (e) => {
-        setSelectedImage(e.target.result); // Set the selected image's data URL
+        setSelectedImage(e.target.result); 
       };
       reader.readAsDataURL(file);
     }
@@ -50,6 +49,7 @@ const ProfileScreen = () => {
 
       const res = await updateProfile(formData).unwrap();
       dispatch(setCredentials({ ...res }));
+      toast.success("User Profile Updated");
     } catch (err) {
       toast.error(err?.data?.message || err?.error);
     }

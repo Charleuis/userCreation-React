@@ -2,6 +2,7 @@ import React, { useEffect, useState } from "react";
 import { Button, Table } from "react-bootstrap";
 import { useNavigate } from "react-router-dom";
 import { AiOutlineDelete, AiOutlineEdit } from "react-icons/ai";
+import { toast } from "react-toastify";
 const USERS_URL = "/api/users";
 
 function Search(props) {
@@ -56,44 +57,44 @@ const AdminHome = () => {
     if (response.ok) {
       const userData = await response.json();
       setUsers(userData.users);
+      toast.success("User Deleted sucessfully");
       navigate("/admin/adminhome");
     } else {
-      alert("delete failed");
+      toast.error("Delete Failed");
     }
   };
 
   const handleEdit = async (id) => {
     try {
-      const response = await fetch(`${USERS_URL}/edituser`, {
+      const response = await fetch(`${USERS_URL}/userDetails`, {
         method: "POST",
         headers: {
-          'Content-Type': 'application/json'
+          "Content-Type": "application/json",
         },
         body: JSON.stringify({
-          _id: id
-        })
+          _id: id,
+        }),
       });
-  
+
       if (response.status === 200) {
         const userData = await response.json();
-        navigate('/admin/edituserscreen');
+        navigate("/admin/edituserscreen", { state: { userData } });
       } else {
-        console.error('Request failed with status:', response.status);
+        console.error("Request failed with status:", response.status);
       }
     } catch (error) {
-      console.error('An error occurred:', error);
+      console.error("An error occurred:", error);
     }
   };
-  
 
   const handleCreateNewUser = () => {
     navigate("/admin/newuserscreen");
   };
 
   const handleLogout = async () => {
-    const logout = await fetch(`${USERS_URL}/adminout`,{
-      method:"POST"
-    })
+    const logout = await fetch(`${USERS_URL}/adminout`, {
+      method: "POST",
+    });
     navigate("/admin");
   };
 

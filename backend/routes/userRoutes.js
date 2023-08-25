@@ -49,11 +49,11 @@ router.post("/logout", logoutUser);
 
   //admin side route
 router.post("/adminlogin",authAdmin);
-router.get("/userslist",usersList);
-router.post("/userdetails", userDetails);
-router.post("/deleteuser", deleteUser);
-router.post("/createuser", createUser);
-router.post("/edituser", editUser);
+router.get("/userslist",protect,usersList);
+router.post("/userdetails",protect, userDetails);
+router.post("/deleteuser",protect, deleteUser);
+router.post("/createuser",protect, createUser);
+router.post("/edituser",protect, editUser);
 router.post("/adminout",logoutAdmin)
 
 export default router;

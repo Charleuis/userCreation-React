@@ -3,7 +3,6 @@ import { useLocation, useNavigate } from "react-router-dom";
 import FormContainer from "../components/FormContainer.jsx";
 import { Form, Button } from "react-bootstrap";
 import { toast } from "react-toastify";
-import { useParams } from 'react-router-dom';
 const USERS_URL = "/api/users";
 
 function AdminEditScreen() {
@@ -13,7 +12,7 @@ function AdminEditScreen() {
   const navigate = useNavigate();
 
   const { state } = useLocation();
-  const userData = state?.userData;
+  const userData = state.userData;
 
   useEffect(() => {
     setName(userData?.name);
@@ -21,36 +20,11 @@ function AdminEditScreen() {
     setImage(userData?.image);
   }, [userData]);
 
-  const { id } = useParams();
-  useEffect(() => {
-    const fetchUserData = async () => {
-      try {
-        const response = await fetch(`${USERS_URL}/edituser/${id}`, {
-          method: "GET",
-          headers: {
-            'Content-Type': 'application/json',
-          },
-        });
-        if (response.status === 200) {
-          const userData = await response.json();
-
-          console.log(userData);
-
-        } else {
-          console.error('Request failed with status:', response.status);
-        }
-      } catch (error) {
-        console.error('An error occurred:', error);
-      }
-    };
-  
-    fetchUserData();
-  }, [id]);
-
   const submitHandler = async (e) => {
     e.preventDefault();
     try {
-      const res = await fetch(`${USERS_URL}/edituser`, { // Fix the URL here
+      const res = await fetch(`${USERS_URL}/edituser`, {
+        // Fix the URL here
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -84,7 +58,7 @@ function AdminEditScreen() {
               }}
             >
               <img
-                src={`/image/${image}`} // Fix the image source here
+                src={`/assets/${image}`}
                 alt="Profile"
                 style={{ width: "200px", height: "200px", borderRadius: "50%" }}
               />

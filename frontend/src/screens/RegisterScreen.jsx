@@ -13,6 +13,7 @@ const RegisterScreen = () => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
+  const [passwordsMatch, setPasswordsMatch] = useState(true);
 
   const navigate = useNavigate();
   const dispatch = useDispatch();
@@ -30,22 +31,36 @@ const RegisterScreen = () => {
   const submitHandler = async (e) => {
     e.preventDefault();
     if (password !== confirmPassword) {
-      toast.error("Password do not march");
-    } else {
-      try {
-        const res = await register({ name, email, password }).unwrap();
-        dispatch(setCredentials({ ...res }));
-        navigate("/");
-      } catch (err) {
-        toast.error(err?.data?.message || err.error);
-      }
+      setPasswordsMatch(false);
+      return;
+    }
+
+    try {
+      const res = await register({ name, email, password }).unwrap();
+      dispatch(setCredentials({ ...res }));
+      navigate("/");
+    } catch (err) {
+      toast.error(err?.data?.message || err.error);
     }
   };
+
+  function validateEmail(event) {
+    const inputField = event.target;
+    const regex =  /^[a-zA-Z0-9._-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,4}$/;
+    const value = inputField.value;
+
+    if(!regex.test(value)){
+      inputField.value = value.slice(0,-1);
+    }else{
+      toast.error("enter a Proper email")
+    }
+  }
+
 
   return (
     <FormContainer>
       <h1>Sign Up</h1>
-      <Form onSubmit={ submitHandler }>
+      <Form onSubmit={submitHandler}>
         <Form.Group className="my-2" controlId="name">
           <Form.Label>Name</Form.Label>
           <Form.Control
@@ -53,7 +68,7 @@ const RegisterScreen = () => {
             placeholder="Enter Name"
             value={name}
             onChange={(e) => setName(e.target.value)}
-          ></Form.Control>
+          />
         </Form.Group>
 
         <Form.Group className="my-2" controlId="email">
@@ -62,28 +77,32 @@ const RegisterScreen = () => {
             type="email"
             placeholder="Enter email"
             value={email}
+            onInput={(e)=>{validateEmail(e)}}
             onChange={(e) => setEmail(e.target.value)}
-          ></Form.Control>
+          />
         </Form.Group>
 
         <Form.Group className="my-2" controlId="password">
-          <Form.Label>Password </Form.Label>
+          <Form.Label>Password</Form.Label>
           <Form.Control
             type="password"
             placeholder="Enter Password"
             value={password}
             onChange={(e) => setPassword(e.target.value)}
-          ></Form.Control>
+          />
         </Form.Group>
 
         <Form.Group className="my-2" controlId="confirmPassword">
-          <Form.Label>Confirm Password </Form.Label>
+          <Form.Label>Confirm Password</Form.Label>
           <Form.Control
             type="password"
-            placeholder="Enter confirmPassword"
+            placeholder="Enter Confirm Password"
             value={confirmPassword}
             onChange={(e) => setConfirmPassword(e.target.value)}
-          ></Form.Control>
+          />
+          {!passwordsMatch && (
+            <p className="text-danger">Passwords do not match.</p>
+          )}
         </Form.Group>
 
         {isLoading && <Loader />}
@@ -94,7 +113,7 @@ const RegisterScreen = () => {
 
         <Row className="py-3">
           <Col>
-            Already Have an Account?<Link to="/login">Login</Link>
+            Already Have an Account? <Link to="/login">Login</Link>
           </Col>
         </Row>
       </Form>

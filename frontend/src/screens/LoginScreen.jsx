@@ -6,7 +6,7 @@ import FormContainer from "../components/FormContainer";
 import { useLoginMutation } from "../slices/usersApiSlice";
 import { setCredentials } from "../slices/authSlice";
 import { toast } from "react-toastify";
-import Loader from '../components/Loader'
+import Loader from "../components/Loader";
 
 const LoginScreen = () => {
   const [email, setEmail] = useState("");
@@ -16,7 +16,7 @@ const LoginScreen = () => {
   const dispatch = useDispatch();
 
   const [login, { isLoading }] = useLoginMutation();
-  
+
   const { userInfo } = useSelector((state) => state.auth);
 
   useEffect(() => {
@@ -24,17 +24,17 @@ const LoginScreen = () => {
       navigate("/");
     }
   }, [navigate, userInfo]);
-    const submitHandler = async (e) => {
-      e.preventDefault();
-      try {
-        const res = await login({ email, password }).unwrap();
+  const submitHandler = async (e) => {
+    e.preventDefault();
+    try {
+      const res = await login({ email, password }).unwrap();
 
-        dispatch(setCredentials({ ...res }));
-        navigate("/ ");
-      } catch (err) {
-        toast.error(err?.data?.message || err.error);
-      }
-    };
+      dispatch(setCredentials({ ...res }));
+      navigate("/ ");
+    } catch (err) {
+      toast.error(err?.data?.message || err.error);
+    }
+  };
 
   return (
     <FormContainer>
